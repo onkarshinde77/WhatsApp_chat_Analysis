@@ -1,6 +1,8 @@
 from wordcloud import WordCloud
 import pandas as pd
 from collections import Counter
+import emoji
+import numpy as np
 
 def fetch_stats(selected_user,data):
     new_df = data
@@ -96,3 +98,33 @@ def count_max_word(selected_user,data):
     temp = pd.DataFrame(temp, columns=['word', 'count'])
     temp = temp[temp['word'] != ""]
     return temp
+
+def emoji_list(selected_user,data):
+    new_df = data
+    new_df = new_df[new_df['messages'] != '<Media omitted>' ]
+    if selected_user != 'All Users':
+        new_df = data[data['sender'] == selected_user ]
+        
+    emojis = []
+    for message in new_df['messages']:
+        emojis.extend([emj for emj in message.strip() if emoji.is_emoji(emj)])
+    emojis = Counter(emojis)
+    emojis = [list(item) for item in emojis.items()]
+    emoji_ = pd.DataFrame(sort_(emojis))
+    # emoji_['nor_num'] = 1/(1+ np.exp(-emoji_[1]))
+    # bins = [0,10, 20, 30, 40, np.inf]
+    # labels = ['10 <', '20 <', '30 <', '40 <', '40+']
+    # emoji_['label'] = pd.cut(emoji_[1], bins=bins, labels=labels, right=True)
+
+    return emoji_
+
+def month_year(selected_user,data):
+    new_df = data
+    new_df = new_df[new_df['messages'] != '<Media omitted>' ]
+    if selected_user != 'All Users':
+        new_df = data[data['sender'] == selected_user ]
+    timeline = new_df.groupby(['year','month_name']).count()['messages'].reset_index()
+    timeline['month_year'] = timeline['month_name'] + "-" + timeline['year'].astype(str)
+    # timeline=timeline.sort_values('messages',ascending=False)
+    return timeline
+    

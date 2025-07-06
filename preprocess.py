@@ -18,6 +18,13 @@ def preprocess(data):
     data['dates'] = data['dates'].astype(str)
     data['year'] = data['dates'].str.split('-').str[0]
     data['month'] = data['dates'].str.split('-').str[1]
+    month_map = {   1: 'January', 2: 'February', 3: 'March', 4: 'April',
+                    5: 'May', 6: 'June', 7: 'July', 8: 'August',
+                    9: 'September', 10: 'October', 11: 'November', 12: 'December'
+                }
+    data['month'] = data['month'].astype(np.int32)
+    data['month_name'] = data['month'].map(month_map)
+    data = data.drop('month',axis=1)
     
     data['day'] = data['dates'].str.split('-').str[2].str.split().str[0]
     data['time'] = data['dates'].str.split('-').str[2].str.split().str[1]

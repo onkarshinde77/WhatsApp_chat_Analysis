@@ -1,12 +1,12 @@
 import streamlit as st
 import numpy as np
 from preprocess import preprocess
-from helper import fetch_stats , active_user , create_wordcloud,count_max_word
+from helper import fetch_stats , active_user , create_wordcloud,count_max_word , emoji_list,month_year
 import matplotlib.pyplot as plt
 
 st.sidebar.title("Whatsapp chat Analyzer")
 # uploaded_file = st.sidebar.file_uploader("Choose a file")
-uploaded_file = open('chats/chat2.txt','r',encoding='utf-8').read()
+uploaded_file = open('chats/chat.txt','r',encoding='utf-8').read()
 
 if uploaded_file is not None:
     # byte_data = uploaded_file.getvalue()
@@ -67,4 +67,22 @@ if uploaded_file is not None:
             ax.barh(max_word['word'].head(10),max_word['count'].head(10))
             plt.xticks(rotation='vertical')
             st.pyplot(fig)
+        
+        st.title("Most used emojis")
+        col1,col2 = st.columns(2)
+        emoji_ = emoji_list(selected_user,data)
+        with col1:
+            st.dataframe(emoji_)
+        with col2:
+            fig ,ax = plt.subplots()
+            ax.barh(emoji_[0], emoji_[1], color='skyblue')
+            st.pyplot(fig)
+            
+        st.title('Message Frequency by month')
+        timeline = month_year(selected_user,data)
+        fig ,ax = plt.subplots()
+        ax.bar(timeline['month_name'],timeline['messages'], color='red')
+        plt.xticks(rotation="vertical")
+        st.pyplot(fig)
+        
 
