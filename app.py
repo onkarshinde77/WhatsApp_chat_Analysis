@@ -6,12 +6,10 @@ import matplotlib.pyplot as plt
 
 st.sidebar.title("Whatsapp chat Analyzer")
 uploaded_file = st.sidebar.file_uploader("Choose a file")
-# uploaded_file = open('chats/chat.txt','r',encoding='utf-8').read()
 
 if uploaded_file is not None:
     byte_data = uploaded_file.getvalue()
     data = byte_data.decode('utf-8')
-    # data = uploaded_file
     data = preprocess(data)
     st.dataframe(data)
     
