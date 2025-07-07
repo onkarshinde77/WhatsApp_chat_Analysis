@@ -1,2 +1,0 @@
-1. open(-,-,encoding='utf=8') - utf-8 support to open file in 8 bytes(if file inlcude the different symbols & emoji)
-2. 

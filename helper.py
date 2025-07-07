@@ -28,9 +28,9 @@ def active_user(data):
     return active_users,per
 
 def create_wordcloud(selected_user,data):
-    df = data
+    df = data[data['messages'] != '<Media omitted>' ]
     if selected_user != 'All Users':
-        df = data[data['sender'] == selected_user]
+        df = df[df['sender'] == selected_user]
     wc = WordCloud(width=300,height=300,min_font_size=10,background_color='white')
     df_wc = wc.generate(df['messages'].str.cat(sep=" ")) 
     return df_wc
@@ -67,26 +67,27 @@ def clean_word(str):
 # ------------------------------------------------------------------------------------------------------------
 
 def count_max_word(selected_user,data):
-    new_df = data
-    new_df = new_df[new_df['messages'] != '<Media omitted>' ]
+    new_df = data[data['messages'] != '<Media omitted>' ]
     if selected_user != 'All Users':
-        new_df = data[data['sender'] == selected_user ]
+        new_df = new_df[new_df['sender'] == selected_user ]
     
     stop_word = ["i","me","my","myself","we","our","ours","ourselves","you","your","yours","yourself","yourselves","he","him","his","himself","she","her","hers","herself","it","its","itself","they","them","their","theirs","themselves","what","which","who","whom","this","that","these","those","am","is","are","was","were","be","been","being","have","has","had","having","do","does","did","doing","a","an","the","and","but",
                  "if","or","because","as","until","while","of","at","by","for","with","about","against","between","into","through","during","before","after","above","below","to","from","up","down","in","out","on","off","over","under","again","further","then","once","here","there","when","where","why","how","all","any","both","each","few","more","most","other","some","such","no","nor","not","only","own","same","so","than",
                  "too","very","s","t","can","will","just","don","should","now","main", "mujhe", "mera", "meri", "hum", "hamara", "hamare", "tum", "tumhara", "tumhare","vah", "wo", "yah", "ye", "jo", "kaun", "kya", "kaise", "kahan", "kab", "kyon","hai", "hain", "tha", "the", "tha", "tha", "tha", "tha", "tha", "tha","aur", "lekin", "ya", "kyonki", "to", "yadi", "jab", "tak", "se", "par", "mein", "ka", "ki", "ke",
-                "bhi", "na", "nahi", "is", "us", "un", "in", "unke", "apne", "apne", "apne","karna", "kiya", "kiye", "karte", "karta", "karti", "kar", "raha", "rahi", "rahe","hona", "hua", "hui", "hue", "hain", "hai", "tha", "the", "tha", "the","yahan", "wahan", "kahan", "kis", "kisi", "kuch", "sab", "sabhi", "kuch", "koi","1","2","3","4","5","6","7","8","9","0",'!', '"', '#', '$', '%', '&', "'", '(', ')', '*', '+', ',', '-', '.', '/',':', ';', '<', '=', '>', '?', '@', '[', '\\', ']', '^', '_', '`', '{', '|', '}', '~']
+                "bhi", "na", "nahi", "is","media","omitted", "us", "un", "in", "unke", "apne", "apne", "apne","karna", "kiya", "kiye", "karte", "karta", "karti", "kar", "raha", "rahi", "rahe","hona", "hua", "hui", "hue", "hain", "hai", "tha", "the", "tha", "the","yahan", "wahan", "kahan", "kis", "kisi", "kuch", "sab", "sabhi", "kuch", "koi","1","2","3","4","5","6","7","8","9","0",'!', '"', '#', '$', '%', '&', "'", '(', ')', '*', '+', ',', '-', '.', '/',':', ';', '<', '=', '>', '?', '@', '[', '\\', ']', '^', '_', '`', '{', '|', '}', '~']
 
     words = []
     for mess in new_df['messages']:
         words.extend(mess.split())
-
     
     # # Filter out stop words
     filtered_words = [word for word in words if word.lower().strip() not in stop_word]
     
     # clean word(exclude * ' " ect )
     words = [clean_word(word) for word in filtered_words]
+    
+    # remove emoji
+    words = [word for word in words if not any(emoji.is_emoji(char) for char in word)]
     # count words
     word_counts = Counter(words)
     
@@ -125,6 +126,6 @@ def month_year(selected_user,data):
         new_df = data[data['sender'] == selected_user ]
     timeline = new_df.groupby(['year','month_name']).count()['messages'].reset_index()
     timeline['month_year'] = timeline['month_name'] + "-" + timeline['year'].astype(str)
-    # timeline=timeline.sort_values('messages',ascending=False)
+    # timeline=timeline.sort_values('month_year',ascending=False)
     return timeline
     

@@ -75,14 +75,20 @@ if uploaded_file is not None:
             st.dataframe(emoji_)
         with col2:
             fig ,ax = plt.subplots()
-            ax.barh(emoji_[0], emoji_[1], color='skyblue')
-            st.pyplot(fig)
+            try:
+                ax.barh(emoji_[0], emoji_[1], color='skyblue')
+                st.pyplot(fig)
+            except Exception as e:
+                st.write("Does not contain emoji")
+
             
         st.title('Message Frequency by month')
         timeline = month_year(selected_user,data)
-        fig ,ax = plt.subplots()
-        ax.bar(timeline['month_name'],timeline['messages'], color='red')
-        plt.xticks(rotation="vertical")
-        st.pyplot(fig)
-        
+        if timeline.shape[0]<2:
+            st.dataframe(timeline[["month_year",'messages']])
+        else:
+            fig ,ax = plt.subplots()
+            ax.plot(timeline['month_year'],timeline['messages'], color='red')
+            plt.xticks(rotation="vertical")
+            st.pyplot(fig)
 
