@@ -1,17 +1,17 @@
 import streamlit as st
 import numpy as np
-from preprocess import preprocess
-from helper import fetch_stats , active_user , create_wordcloud,count_max_word , emoji_list,month_year
+from functions.preprocess import preprocess
+from functions.helper import fetch_stats , active_user , create_wordcloud,count_max_word , emoji_list,month_year
 import matplotlib.pyplot as plt
 
 st.sidebar.title("Whatsapp chat Analyzer")
-# uploaded_file = st.sidebar.file_uploader("Choose a file")
-uploaded_file = open('chats/chat.txt','r',encoding='utf-8').read()
+uploaded_file = st.sidebar.file_uploader("Choose a file")
+# uploaded_file = open('chats/chat.txt','r',encoding='utf-8').read()
 
 if uploaded_file is not None:
-    # byte_data = uploaded_file.getvalue()
-    # data = byte_data.decode('utf-8')
-    data = uploaded_file
+    byte_data = uploaded_file.getvalue()
+    data = byte_data.decode('utf-8')
+    # data = uploaded_file
     data = preprocess(data)
     st.dataframe(data)
     
